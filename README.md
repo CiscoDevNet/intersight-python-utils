@@ -24,37 +24,8 @@ Intersight-OpenAPI 1.0.9.2908
 (pip uninstall any intersight SDKs that may have been previously installed)
 
 ## Usage
-If you're using playbooks in this repo, you will need to provide your own inventory file and cusomtize any variables used in playbooks with settings for your environment.
-Here's an example inventory for the k8s-cluster playbooks (based on the examples at https://www.learnitguide.net/2019/01/install-kubernetes-cluster-using-ansible.html ):
+Example scripts take API key arguments on the command line.  Here's example usage with v3 API keys:
 ```
-[kube_main]
-172.22.248.19
-
-[kube_nodes]
-172.22.248.[22:23]
-
-[kube:children]
-kube_main
-kube_nodes
-
-[kube:vars]
-ansible_ssh_user=root
+python example.py --api-key-id 596cc79e5d91b400010d15ad/5db71f977564612d30cc3860/5e9217a57564612d302f475b --api-key-file=/Users/dsoper/Downloads/TME-Demo_dsoper_v3_SecretKey.txt
 ```
-For demo purposes, you can copy the example above to a new file named inventory.  Then, edit the inventory file to provide your own hostnames (IPs).
-
-Once you've inventory is setup, you'll also need to make sure you have ssh key based access to each host in the inventory.  
-To do this place your ssh public key in ~/.ssh/authorized_keys on the host and verify you can login without a password:
-```
-ssh root@172.22.248.19
-```
-
-Here are example command lines for creating a k8s cluster (run from in the k8s-cluster subdirectory):
-```
-ansible-playbook -i inventory prereqs.yml --vault-id tme@vault_password_file
-```
-The --vault-id is only needed for RedHat distributions and subscription manager.  You can omit that argument for CentOS based config.
-
-You can also specify your own host group if you have a different setup in your inventory file:
-```
-ansible-playbook -i inventory prereqs.yml -e group=demo
-```
+Example scripts are currently verbose in output to aid in debugging any key or authentication issues.
