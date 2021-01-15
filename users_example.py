@@ -24,7 +24,7 @@ def get_users(apiClient):
 
 
 def main():
-    # Defining host is optional and default to https://intersight.com
+    # Configure API key settings for authentication
     apiClient = credentials.config_credentials()
 
     try:
