@@ -21,6 +21,7 @@ import intersight
 # This argument parser instance should be used within scripts where additional CLI arguments are required
 Parser = argparse.ArgumentParser(description='Intersight Python SDK credential lookup')
 
+
 def config_credentials(description=None):
     """config_credentials configures and returns an Intersight api client
 
@@ -28,9 +29,9 @@ def config_credentials(description=None):
         description {string}: Optional description used within argparse help
 
     Returns:
-        apiClient [intersight.api_client.ApiClient]: base intersight api client class
-    """    
-    if description != None:
+        api_client [intersight.api_client.ApiClient]: base intersight api client class
+    """
+    if description is not None:
         Parser.description = description
     Parser.add_argument('--url', default='https://intersight.com',
                         help='The Intersight root URL for the API endpoint. The default is https://intersight.com')
@@ -84,12 +85,13 @@ def config_credentials(description=None):
     if args.ignore_tls:
         configuration.verify_ssl = False
 
-    apiClient = intersight.ApiClient(configuration)
-    apiClient.set_default_header('referer', args.url)
-    apiClient.set_default_header('x-requested-with', 'XMLHttpRequest')
-    apiClient.set_default_header('Content-Type', 'application/json')
+    configuration.proxy = os.getenv('https_proxy')
+    api_client = intersight.ApiClient(configuration)
+    api_client.set_default_header('referer', args.url)
+    api_client.set_default_header('x-requested-with', 'XMLHttpRequest')
+    api_client.set_default_header('Content-Type', 'application/json')
 
-    return apiClient
+    return api_client
 
 
 if __name__ == "__main__":
