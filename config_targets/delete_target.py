@@ -1,12 +1,13 @@
-"""Delete an Intersight device via the Intersight API."""
+"""Delete an Intersight target via the Intersight API."""
 import sys
 import json
 import traceback
 import intersight.api.asset_api
+sys.path.append('../')
 import credentials
 
 
-def delete_device(api_client, target_host):
+def delete_target(api_client, target_host):
     result = dict(changed=False)
 
     # create API instance
@@ -22,7 +23,7 @@ def delete_device(api_client, target_host):
             result['changed'] = True
             break
     else:
-        # for loop completed without finding the device
+        # for loop completed without finding the target
         print("Device not found or not connected:", target_host)
 
     print(json.dumps(result))
@@ -31,14 +32,14 @@ def delete_device(api_client, target_host):
 def main():
     # * Get existing argument parser from credentials
     parser = credentials.Parser
-    parser.description = 'Intersight script to delete device by IP address'
+    parser.description = 'Intersight script to delete target by IP address'
 
     # * Place script specific arguments here
     parser.add_argument(
         '-t',
         '--target_host',
         required=True,
-        help='Target host ip to delete.  Deletes 1st device found with the specified IP(does not handle multiple devices with same IPs in an account'
+        help='Target host ip to delete.  Deletes 1st target found with the specified IP(does not handle multiple targets with same IPs in an account'
     )
 
     api_client = credentials.config_credentials()
@@ -47,8 +48,8 @@ def main():
 
     try:
         # * Start main code here
-        # * Delete device with specified IP
-        delete_device(api_client, args.target_host)
+        # * Delete target with specified IP
+        delete_target(api_client, args.target_host)
 
     except intersight.OpenApiException as exp:
         print("Exception when calling API: %s\n" % exp)
