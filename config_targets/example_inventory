@@ -1,0 +1,19 @@
+[sjc07]
+172.28.225.122 device_type=imc
+172.28.225.20 device_type=ucs
+
+[sjc07:vars]
+password=...
+
+[behind_proxy:children]
+sjc07
+
+[behind_proxy:vars]
+proxy_host=proxy-wsa.esl.cisco.com
+proxy_port=80
+
+[all:children]
+sjc07
+
+[all:vars]
+username=admin

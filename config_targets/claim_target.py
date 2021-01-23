@@ -1,4 +1,4 @@
-"""Intersight Device Connector API configuration and device claim via the Intersight API."""
+"""Intersight Device Connector API configuration and target claim via the Intersight API."""
 import sys
 import os.path
 import json
@@ -6,11 +6,12 @@ import traceback
 from time import sleep
 import intersight.api.asset_api
 import intersight.model.asset_device_claim
+sys.path.append('../')
 import credentials
 import device_connector
 
 
-def claim_device(api_client, device_id, claim_code):
+def claim_target(api_client, device_id, claim_code):
     # create API instance
     api_instance = intersight.api.asset_api.AssetApi(api_client)
     asset_claim = intersight.model.asset_device_claim.AssetDeviceClaim(
@@ -19,17 +20,18 @@ def claim_device(api_client, device_id, claim_code):
     )
     api_instance.create_asset_device_claim(asset_claim)
 
+
 def main():
     # * Get existing argument parser from credentials
     parser = credentials.Parser
-    parser.description = 'Intersight script to delete device by IP address'
+    parser.description = 'Intersight script to claim target'
 
     # * Place script specific arguments here
     parser.add_argument(
-        '-d',
-        '--devices',
+        '-t',
+        '--targets',
         required=True,
-        help='JSON file with device access information (device hostname, username, password, and proxy settings if requred)'
+        help='JSON file with target access information (hostname, username, password, and proxy settings if requred)'
     )
 
     api_client = credentials.config_credentials()
@@ -38,34 +40,34 @@ def main():
 
     return_code = 0
 
-    if os.path.isfile(args.devices):
-        with open(args.devices, 'r') as devices_file:
-            devices_list = json.load(devices_file)
+    if os.path.isfile(args.targets):
+        with open(args.targets, 'r') as targets_file:
+            targets_list = json.load(targets_file)
     else:
-        # Argument devices can be a JSON string instead of file.
+        # Argument targets can be a JSON string instead of file.
         # JSON string input can be used with Ansible to directly pass all info on the command line.
-        devices_list = json.loads(args.devices)
+        targets_list = json.loads(args.targets)
 
     # Large try and generic exception handling with many APIs in use and exceptions possible
     try:
-        for device in devices_list:
+        for target in targets_list:
             result = dict(changed=False)
-            result['msg'] = "  Host: %s" % device['hostname']
+            result['msg'] = "  Host: %s" % target['hostname']
             # default access mode to allow control (Read-only False) and set to a boolean value if a string
-            if not device.get('read_only'):
-                device['read_only'] = False
+            if not target.get('read_only'):
+                target['read_only'] = False
             else:
-                if device['read_only'] == 'True' or device['read_only'] == 'true':
-                    device['read_only'] = True
-                elif device['read_only'] == 'False' or device['read_only'] == 'false':
-                    device['read_only'] = False
-            # create device connector object based on device type
-            if device['device_type'] == 'imc' or device['device_type'] == 'ucs' or device['device_type'] == 'ucsm' or device['device_type'] == 'ucspe':
-                dc_obj = device_connector.UcsDeviceConnector(device)
-            elif device['device_type'] == 'hx':
-                dc_obj = device_connector.HxDeviceConnector(device)
+                if target['read_only'] == 'True' or target['read_only'] == 'true':
+                    target['read_only'] = True
+                elif target['read_only'] == 'False' or target['read_only'] == 'false':
+                    target['read_only'] = False
+            # create target connector object based on target type
+            if target['device_type'] == 'imc' or target['device_type'] == 'ucs' or target['device_type'] == 'ucsm' or target['device_type'] == 'ucspe':
+                dc_obj = device_connector.UcsDeviceConnector(target)
+            elif target['device_type'] == 'hx':
+                dc_obj = device_connector.HxDeviceConnector(target)
             else:
-                result['msg'] += "  Unknown device_type %s" % device['device_type']
+                result['msg'] += "  Unknown device_type %s" % target['device_type']
                 return_code = 1
                 print(json.dumps(result))
                 continue
@@ -85,7 +87,7 @@ def main():
                 continue
 
             # set access mode (ReadOnlyMode True/False) to desired state
-            if (ro_json.get('ReadOnlyMode') is not None) and (ro_json['ReadOnlyMode'] != device['read_only']):
+            if (ro_json.get('ReadOnlyMode') is not None) and (ro_json['ReadOnlyMode'] != target['read_only']):
                 ro_json = dc_obj.configure_access_mode(ro_json)
                 if ro_json.get('ApiError'):
                     result['msg'] += ro_json['ApiError']
@@ -133,7 +135,7 @@ def main():
                 result['msg'] += "  Token: %s" % claim_code
 
                 # Create Intersight API instance and post ID/claim code
-                claim_device(api_client, device_id, claim_code)
+                claim_target(api_client, device_id, claim_code)
                 result['changed'] = True
 
             print(json.dumps(result))
