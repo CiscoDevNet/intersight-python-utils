@@ -1,0 +1,6 @@
+#SecretKeys
+*.txt
+
+#output
+*.xlsx
+!Intersight_EoX_Report.example.xlsx
