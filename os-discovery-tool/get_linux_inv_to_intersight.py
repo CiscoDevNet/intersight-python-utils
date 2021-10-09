@@ -618,7 +618,7 @@ class IntersightConnectionManager:
                     kwargs = dict(filter=("Serial eq " + self.serial_number), inlinecount='allpages', top=100)
                     self.results = self.api_instance.get_compute_rack_unit_list(**kwargs)
 
-            if self.results >=1:
+            if self.results.count >= 1:
                 print(("[" +
                        hostname.strip() +
                        "]: Server MO Identity: " +
