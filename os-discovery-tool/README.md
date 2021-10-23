@@ -55,10 +55,21 @@ total 1136
    ```Bash
      $ pip install enum34
    ```
-  4. **Install Intersight Python SDK**: Clone this repository on the **Control Node** as described below and follow the build instructions available here: https://github.com/CiscoDevNet/intersight-python.
-   ```Bash
-     $ git clone https://github.com/CiscoDevNet/intersight-python.git
-   ```  
+  4. **Intersight Python SDK**: To install Python SDK on **Control Node**, use any one of the following:
+     - Install using Intersight Python package:  
+        ```Bash
+          $ pip install intersight
+        ```
+     - Install directly from Github:
+        ```Bash
+          $ pip install git+https://github.com/CiscoDevNet/intersight-python
+        ```
+     - Install via SetupTools: Clone this repository on the **Control Node** from https://github.com/CiscoDevNet/intersight-python and then run: 
+        ```Bash
+          $ python setup.py install --user
+        ```
+         (or sudo python setup.py install to install the package for all users)
+
   ---
   ### II. Pre-requisites/dependent components for Target Servers
   1. **Claim your servers:** Ensure that all your linux servers are claimed in Cisco Intersight. We will call these **Target Servers**. This toolset validates only the claimed servers by their serial numbers and their connectivity to Intersight.  
