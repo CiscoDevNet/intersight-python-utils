@@ -49,7 +49,7 @@ def get_audit_log_aggregate_query(api_client):
     api_instance = intersight.api.aaa_api.AaaApi(api_client)
     api_response = api_instance.get_aaa_audit_record_list(
         apply="groupby((UserIdOrEmail),aggregate($count as Total))",
-        orderby="-Total",
+        orderby="Total desc",
     )
     logger.info(pformat(api_response.results))
 

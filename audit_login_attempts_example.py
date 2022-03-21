@@ -32,7 +32,7 @@ def main():
         #* Group results by Email and set count to property named `Total`
         query_apply = "groupby((Email), aggregate($count as Total))"
         #* Sort by Total in descending order
-        query_order_by = "-Total"
+        query_order_by = "Total desc"
 
         #* Get aaa records using query parameters
         aaa_query = api_instance.get_aaa_audit_record_list(filter=query_filter, apply=query_apply, orderby=query_order_by)
