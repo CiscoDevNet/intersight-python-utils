@@ -29,10 +29,10 @@ def main():
 
         #* Find all aaa records for login attempts
         query_filter = "Event eq Login"
-        #* Group results by Email and set count to property named `Total`
-        query_apply = "groupby((Email), aggregate($count as Total))"
-        #* Sort by Total in descending order
-        query_order_by = "Total desc"
+        #* Group results by Email and set CreateTime to the Latest login
+        query_apply = "groupby((Email), aggregate(CreateTime with max as Latest))"
+        #* Sort by latest login in descending order
+        query_order_by = "Latest desc"
 
         #* Get aaa records using query parameters
         aaa_query = api_instance.get_aaa_audit_record_list(filter=query_filter, apply=query_apply, orderby=query_order_by)
