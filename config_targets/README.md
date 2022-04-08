@@ -26,3 +26,6 @@ TASK [Claim targets] ***********************************************************
 ok: [172.28.225.20]
 ...
 ```
+
+## Additional Information
+See https://community.cisco.com/t5/data-center-and-cloud-documents/automated-intersight-target-claim/ta-p/3652214 for a detailed overview of Automated Target Claim in Intersight using the Python SDK.
