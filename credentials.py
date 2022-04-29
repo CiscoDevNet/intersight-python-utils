@@ -15,6 +15,7 @@ It uses argparse to take in the following CLI arguments:
 import argparse
 import os
 import datetime
+import re
 
 import intersight
 
@@ -38,7 +39,11 @@ def config_credentials(description=None):
     Parser.add_argument('--ignore-tls', action='store_true',
                         help='Ignore TLS server-side certificate verification')
     Parser.add_argument('--api-key-legacy', action='store_true',
-                        help='Use legacy API client (v2) key')
+                        help='Unused argument - v2 or v3 API keys are detected automatically')
+    Parser.add_argument(
+        '--https-proxy',
+        default=os.getenv('https_proxy'),
+        help="https_proxy with port if required for connecting to Intersight (e.g., 'http://proxy.esl.cisco.com:80')")
     Parser.add_argument(
         '--api-key-id',
         default=os.getenv('INTERSIGHT_API_KEY_ID'),
@@ -50,14 +55,23 @@ def config_credentials(description=None):
 
     args = Parser.parse_args()
 
-    if args.api_key_id:
+    if args.api_key_id and args.api_key_file:
+        with open(args.api_key_file, 'r') as file:
+            private_key = file.read()
+        regex = re.compile(r"\s*-----BEGIN (.*)-----\s+")
+        match = regex.match(private_key)
+        if not match:
+            raise ValueError("API key file does not have a valid PEM pre boundary")
+        pem_header = match.group(1)
         # HTTP signature scheme.
-        if args.api_key_legacy:
+        if pem_header == 'RSA PRIVATE KEY':
             signing_scheme = intersight.signing.SCHEME_RSA_SHA256
             signing_algorithm = intersight.signing.ALGORITHM_RSASSA_PKCS1v15
-        else:
+        elif pem_header == 'EC PRIVATE KEY':
             signing_scheme = intersight.signing.SCHEME_HS2019
             signing_algorithm = intersight.signing.ALGORITHM_ECDSA_MODE_FIPS_186_3
+        else:
+            raise Exception("Unsupported key: {0}".format(pem_header))
 
         configuration = intersight.Configuration(
             host=args.url,
@@ -80,12 +94,12 @@ def config_credentials(description=None):
             )
         )
     else:
-        raise Exception('Must provide API key information to configure at least one authentication scheme')
+        raise Exception('Must provide API key information')
 
     if args.ignore_tls:
         configuration.verify_ssl = False
 
-    configuration.proxy = os.getenv('https_proxy')
+    configuration.proxy = args.https_proxy
     api_client = intersight.ApiClient(configuration)
     api_client.set_default_header('referer', args.url)
     api_client.set_default_header('x-requested-with', 'XMLHttpRequest')
