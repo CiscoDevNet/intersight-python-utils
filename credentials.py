@@ -38,6 +38,8 @@ def config_credentials(description=None):
                         help='The Intersight root URL for the API endpoint. The default is https://intersight.com')
     Parser.add_argument('--ignore-tls', action='store_true',
                         help='Ignore TLS server-side certificate verification')
+    Parser.add_argument('--api-key-legacy', action='store_true',
+                        help='Unused argument - v2 or v3 API keys are detected automatically')
     Parser.add_argument(
         '--https-proxy',
         default=os.getenv('https_proxy'),
