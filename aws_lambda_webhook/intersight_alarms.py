@@ -146,25 +146,27 @@ def lambda_handler(event, context):
     print('>> context:', context)
     verify_auth_header(event)
 
-    # Code below is specific to AWS Timestream and not required for processing Intersight webhooks
-    session = boto3.Session()
-    write_client = session.client('timestream-write', config=Config(
-        read_timeout=20, max_pool_connections=5000, retries={'max_attempts': 10}))
-    records = []
-
     # Code below is specific to Intersight Alarm resources.  Other webhook resource types would have different attributes.
     alarm_event = json.loads(event['body'])['Event']
-    print('>> alarm:', alarm_event['LastTransitionTime'], alarm_event['AffectedMoDisplayName'], alarm_event['Code'], alarm_event['Moid'])
-    # timestamp = int(datetime.fromisoformat(alarm_event['LastTransitionTime']).timestamp() * 1000)
-    timestamp = int(datetime.strptime(alarm_event['LastTransitionTime'], "%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * 1000)
-    print('>> timestamp:', timestamp)
-    dimensions = [
-        {'Name': 'affected_mo', 'Value': alarm_event['AffectedMoDisplayName']},
-        {'Name': 'device', 'Value': alarm_event['Moid']}
-    ]
-    records.append(prepare_record(timestamp, dimensions, 'alarm_code', alarm_event['Code']))
+    if alarm_event.get('Code'):
+        print('>> alarm:', alarm_event['LastTransitionTime'], alarm_event['AffectedMoDisplayName'], alarm_event['Code'], alarm_event['Moid'])
+        # timestamp = int(datetime.fromisoformat(alarm_event['LastTransitionTime']).timestamp() * 1000)
+        timestamp = int(datetime.strptime(alarm_event['LastTransitionTime'], "%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * 1000)
+        print('>> timestamp:', timestamp)
+        dimensions = [
+            {'Name': 'affected_mo', 'Value': alarm_event['AffectedMoDisplayName']},
+            {'Name': 'device', 'Value': alarm_event['Moid']}
+        ]
 
-    write_records(write_client, records)
+        # Code below is specific to AWS Timestream and not required for processing Intersight webhooks
+        session = boto3.Session()
+        write_client = session.client('timestream-write', config=Config(
+            read_timeout=20, max_pool_connections=5000, retries={'max_attempts': 10}))
+        records = []
+
+        records.append(prepare_record(timestamp, dimensions, 'alarm_code', alarm_event['Code']))
+
+        write_records(write_client, records)
 
     resp = {
         "statusCode": 200,
@@ -175,6 +177,6 @@ def lambda_handler(event, context):
 
 
 if __name__ == '__main__':
-    test_event = []
-    test_context = []
+    test_event = {}
+    test_context = {}
     lambda_handler(test_event, test_context)
