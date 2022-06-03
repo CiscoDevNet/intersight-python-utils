@@ -4,6 +4,7 @@
 
 [sjc07:vars]
 password=...
+resource_groups="Demo-DevNet-rg"
 
 [behind_proxy:children]
 sjc07

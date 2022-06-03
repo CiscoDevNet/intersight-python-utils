@@ -11,6 +11,7 @@
     target_proxy_host: "{{ proxy_host | default('') }}"
     target_proxy_port: "{{ proxy_port | default(0) }}"
     target_read_only: "{{ read_only | default(false) }}"
+    target_resource_groups: "{{ resource_groups | default(omit) }}"
   environment:
     PYTHONPATH: "{{ playbook_dir }}"
   tasks:
@@ -25,7 +26,8 @@
           "device_type": "{{ platform_type }}",
           "proxy_host": "{{ target_proxy_host }}",
           "proxy_port": "{{ target_proxy_port }}",
-          "read_only": "{{ target_read_only }}"
+          "read_only": "{{ target_read_only }}",
+          "resource_groups": ["{{ target_resource_groups }}"]
           }'
     - name: Claim targets
       script: /usr/bin/env python claim_target.py -t ' [{{ stash_json }}]'

@@ -6,7 +6,8 @@
         "proxy_host": "proxy-wsa.esl.cisco.com",
         "proxy_port": 80,
         "username": "admin",
-        "read_only": true
+        "read_only": true,
+        "resource_groups": ["Demo-DevNet-rg", "shared-config-rg"]
     },
     {
         "device_type": "ucsm",
@@ -15,7 +16,8 @@
         "proxy_host": "proxy-wsa.esl.cisco.com",
         "proxy_port": 80,
         "username": "admin",
-        "read_only": "True"
+        "read_only": "True",,
+        "resource_groups": ["shared-config-rg"]
     },
     {
         "device_type": "ucsm",
