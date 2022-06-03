@@ -6,17 +6,68 @@ import traceback
 from time import sleep
 import intersight.api.asset_api
 import intersight.model.asset_device_claim
+from intersight.api import resource_api
+from intersight.model.resource_reservation import ResourceReservation
+from intersight.model.mo_mo_ref import MoMoRef
 sys.path.append('../')
 import credentials
 import device_connector
 
 
-def claim_target(api_client, device_id, claim_code):
-    # create API instance
+# Get resource group moids using filter
+def get_resource_groups(api_client, filter_):
+    # Creating the resource api instance.
+    resource_instance = resource_api.ResourceApi(api_client)
+
+    try:
+        # Create a resource.Reservation resource
+        api_response = resource_instance.get_resource_group_list(filter=filter_, select='Moid')
+        return api_response
+    except Exception as err:
+        print("Exception:", str(err))
+        sys.exit(1)
+
+
+# Creating resource_reservation
+def create_resource_reservation(api_client, rg_moid_list):
+    # Creating the resource api instance.
+    resource_reservation_instance = resource_api.ResourceApi(api_client)
+
+    # Creation of resource_reservation model instance.
+    resource_reservation = ResourceReservation()
+
+    # Setting all the attributes for resource_reservation model instance.
+    rg_list = []
+    for group in rg_moid_list:
+        rg_list.append(MoMoRef(object_type='resource.Group', moid=group))
+    resource_reservation.groups = rg_list
+    resource_reservation.resource_type = "asset.DeviceRegistration"
+    try:
+        # Create a resource.Reservation resource
+        api_response = resource_reservation_instance.create_resource_reservation(resource_reservation)
+        return api_response
+    except Exception as err:
+        print("Exception:", str(err))
+        sys.exit(1)
+
+
+def claim_target(api_client, device_id, claim_code, resource_groups):
+    # get resource group moids
+    filter_str = "Name in (" + ', '.join("'" + rg + "'" for rg in resource_groups) + ")"
+    api_response = get_resource_groups(api_client, filter_=filter_str)
+    rg_moid_list = []
+    for group in api_response.results:
+        rg_moid_list.append(group.moid)
+
+    # post resource group reservations
+    api_response = create_resource_reservation(api_client, rg_moid_list)
+
+    # claim with device id, claim code, and resource groups
     api_instance = intersight.api.asset_api.AssetApi(api_client)
     asset_claim = intersight.model.asset_device_claim.AssetDeviceClaim(
         serial_number=device_id,
-        security_token=claim_code
+        security_token=claim_code,
+        reservation=MoMoRef(object_type='resource.Reservation', moid=api_response.moid)
     )
     api_instance.create_asset_device_claim(asset_claim)
 
@@ -135,7 +186,10 @@ def main():
                 result['msg'] += "  Token: %s" % claim_code
 
                 # Create Intersight API instance and post ID/claim code
-                claim_target(api_client, device_id, claim_code)
+                if not target.get('resource_groups'):
+                    # claim to default resource group
+                    target['resource_groups'] = ['default']
+                claim_target(api_client, device_id, claim_code, target['resource_groups'])
                 result['changed'] = True
 
             print(json.dumps(result))
