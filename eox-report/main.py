@@ -10,6 +10,7 @@ import requests
 import json
 import intersight
 from intersight.api import equipment_api
+from dateutil import parser
 
 load_dotenv()
 
@@ -80,31 +81,32 @@ with intersight.ApiClient(configuration) as api_client:
     print(str(recordcount.count) + " records found")
     records_per_page = 20 #change this number to control how many results are returned at a time from Intersight
     for i in range(0, recordcount.count, records_per_page):
-        query = api_instance.get_equipment_device_summary_list(top=records_per_page, skip=i, select=select, filter=filter, expand=expand)
-        for record in query.results:
-            if record.model not in SKUs: #check to see if this is a new model
-                SKUs.append(record.model) #add it to the known models if it is
-                eoxquery = lookup_by_pid(record.model)[0] #request EoX data from the API
-                if eoxquery['EOLProductID'] == record.model: eoxdata.append(eoxquery) #check to make sure the data is good, and store it
-            eoxrecord = find_eos_record(record.model) #get the EoX data for the model out of our list
+        query = api_instance.get_equipment_device_summary_list(top=records_per_page, skip=i, select=select, filter=filter, expand=expand, _preload_content=False)
+        results = json.loads(query.data)['Results']
+        for record in results:
+            if record['Model'] not in SKUs: #check to see if this is a new model
+                SKUs.append(record['Model']) #add it to the known models if it is
+                eoxquery = lookup_by_pid(record['Model'])[0] #request EoX data from the API
+                if eoxquery['EOLProductID'] == record['Model']: eoxdata.append(eoxquery) #check to make sure the data is good, and store it
+            eoxrecord = find_eos_record(record['Model']) #get the EoX data for the model out of our list
             #write out all of the data into a row of the spreadsheet
             column = 0
-            inventory_worksheet.write(row, column, record.moid)
+            inventory_worksheet.write(row, column, record['Moid'])
             column += 1
-            if record.registered_device.connection_status == "Connected": #make the cell have red text if it's not currently connected to Intersight
-                inventory_worksheet.write(row, column, record.registered_device.connection_status)
+            if record['RegisteredDevice']['ConnectionStatus'] == "Connected": #make the cell have red text if it's not currently connected to Intersight
+                inventory_worksheet.write(row, column, record['RegisteredDevice']['ConnectionStatus'])
             else:
-                inventory_worksheet.write(row, column, record.registered_device.connection_status, red_format)
+                inventory_worksheet.write(row, column, record['RegisteredDevice']['ConnectionStatus'], red_format)
             column += 1
-            inventory_worksheet.write_datetime(row, column, record.registered_device.connection_status_last_change_time, date_format)
+            inventory_worksheet.write_datetime(row, column, parser.parse(record['RegisteredDevice']['ConnectionStatusLastChangeTime']), date_format)
             column += 1
-            inventory_worksheet.write(row, column, record.model)
-            print(record.model, end =" ")
+            inventory_worksheet.write(row, column, record['Model'])
+            print(record['Model'], end =" ")
             column += 1
-            inventory_worksheet.write(row, column, record.serial)
-            print(" " + record.serial, end =" ")
+            inventory_worksheet.write(row, column, record['Serial'])
+            print(" " + record['Serial'], end =" ")
             column += 1
-            inventory_worksheet.write(row, column, record.source_object_type)
+            inventory_worksheet.write(row, column, record['SourceObjectType'])
             column += 1
             if eoxrecord: #leave these columns blank if there isn't an eox record
                 inventory_worksheet.write(row, column, eoxrecord['ProductBulletinNumber'])
