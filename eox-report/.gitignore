@@ -1,5 +1,6 @@
 #SecretKeys
 *.txt
+!requirements.txt
 
 #output
 *.xlsx
