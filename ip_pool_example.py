@@ -2,6 +2,7 @@ import logging
 from intersight.model.ippool_ip_v4_block import IppoolIpV4Block
 from intersight.model.ippool_ip_v4_config import IppoolIpV4Config
 from intersight.model.organization_organization_relationship import OrganizationOrganizationRelationship
+from intersight.api import organization_api
 from intersight.api import ippool_api
 from intersight.model.ippool_pool import IppoolPool
 import intersight
@@ -27,8 +28,10 @@ def create_ippool_ip_v4_config():
     return ippool_ip_v4_config
 
 
-def get_organization_organization_relationship():
-    organization_organization = OrganizationOrganizationRelationship(moid="5deea1d16972652d33ba886b",
+def get_organization_organization_relationship(api_client):
+    organization_instance = organization_api.OrganizationApi(api_client)
+    api_response = organization_instance.get_organization_organization_list(filter="Name eq 'dsoper-DevNet'")
+    organization_organization = OrganizationOrganizationRelationship(moid=api_response.results[0].moid,
                                                                      object_type="organization.Organization",
                                                                      class_id="mo.MoRef",
                                                                      )
@@ -68,7 +71,7 @@ def create_ippool_pool1(api_client):
     ippool_pool.ip_v4_config = create_ippool_ip_v4_config()
     # ippool_pool.ip_v6_blocks = []
     ippool_pool.name = "TME-SJC07-IPs"
-    ippool_pool.organization = get_organization_organization_relationship()
+    ippool_pool.organization = get_organization_organization_relationship(api_client)
     try:
         # Create a ippool.Pool resource
         api_response = ippool_pool_instance.create_ippool_pool(ippool_pool)
