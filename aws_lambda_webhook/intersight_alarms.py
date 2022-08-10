@@ -148,7 +148,7 @@ def lambda_handler(event, context):
 
     # Code below is specific to Intersight Alarm resources.  Other webhook resource types would have different attributes.
     alarm_event = json.loads(event['body'])['Event']
-    if alarm_event.get('Code'):
+    if alarm_event and alarm_event.get('Code'):
         print('>> alarm:', alarm_event['LastTransitionTime'], alarm_event['AffectedMoDisplayName'], alarm_event['Code'], alarm_event['Moid'])
         # timestamp = int(datetime.fromisoformat(alarm_event['LastTransitionTime']).timestamp() * 1000)
         timestamp = int(datetime.strptime(alarm_event['LastTransitionTime'], "%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * 1000)
