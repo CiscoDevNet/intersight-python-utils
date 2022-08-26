@@ -18,3 +18,5 @@ The intersight_alarms.py module has the following functions to process Intersigh
   - The lambda_handler function gets alarm information from the webhook's event body.  The code is specific to the cond.Alarm event type from Intersight, so other event types would need different code.  Alarm information is placed into an AWS Timestream record and written to the time series database.  Note that the code is meant as a reference only of processing webhook data - alarm information would not typically be used in a time series.
       
 ## Additional Information
+Video overview of configuring and testing webhooks: https://www.youtube.com/watch?v=lQ2AHAQ-uuQ&ab_channel=CiscoIntersight%2CHyperFlex%26UCS
+Intersight help pages on webhooks: https://intersight.com/help/saas/features/cisco_intersight/settings#configuring_webhooks
