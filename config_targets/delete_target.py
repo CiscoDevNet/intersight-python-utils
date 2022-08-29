@@ -17,7 +17,7 @@ def delete_target(api_client, target_host):
     api_result = api_instance.get_asset_device_registration_list(**kwargs)
 
     for device in api_result.results:
-        if device.device_ip_address[0] == target_host:
+        if target_host in device.device_ip_address:
             api_instance.delete_asset_device_claim(moid=device.device_claim.moid)
             print("Device deleted:", target_host)
             result['changed'] = True
