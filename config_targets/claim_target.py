@@ -24,7 +24,7 @@ def get_resource_groups(api_client, filter_):
         api_response = resource_instance.get_resource_group_list(filter=filter_, select='Moid')
         return api_response
     except Exception as err:
-        print("Exception:", str(err))
+        print("Intersight Exception:", str(err))
         sys.exit(1)
 
 
@@ -47,7 +47,7 @@ def create_resource_reservation(api_client, rg_moid_list):
         api_response = resource_reservation_instance.create_resource_reservation(resource_reservation)
         return api_response
     except Exception as err:
-        print("Exception:", str(err))
+        print("Intersight Exception:", str(err))
         sys.exit(1)
 
 
@@ -64,12 +64,17 @@ def claim_target(api_client, device_id, claim_code, resource_groups):
 
     # claim with device id, claim code, and resource groups
     api_instance = intersight.api.asset_api.AssetApi(api_client)
-    asset_claim = intersight.model.asset_device_claim.AssetDeviceClaim(
-        serial_number=device_id,
-        security_token=claim_code,
-        reservation=MoMoRef(object_type='resource.Reservation', moid=api_response.moid)
-    )
-    api_instance.create_asset_device_claim(asset_claim)
+    try:
+        asset_claim = intersight.model.asset_device_claim.AssetDeviceClaim(
+            serial_number=device_id,
+            security_token=claim_code,
+            reservation=MoMoRef(object_type='resource.Reservation', moid=api_response.moid)
+        )
+        api_instance.create_asset_device_claim(asset_claim)
+    except Exception as err:
+        print("Claim failed for device %s, claim %s" % (device_id, claim_code))
+        print("Intersight Exception:", str(err))
+        sys.exit(1)
 
 
 def main():
