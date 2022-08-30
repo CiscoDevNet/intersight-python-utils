@@ -11,7 +11,7 @@
     target_proxy_host: "{{ proxy_host | default('') }}"
     target_proxy_port: "{{ proxy_port | default(0) }}"
     target_read_only: "{{ read_only | default(false) }}"
-    target_resource_groups: "{{ resource_groups | default(omit) }}"
+    target_resource_groups: "{{ resource_groups | default('default') }}"
   environment:
     PYTHONPATH: "{{ playbook_dir }}"
   tasks:
@@ -33,3 +33,4 @@
       script: /usr/bin/env python claim_target.py -t ' [{{ stash_json }}]'
       register: result
       changed_when: '"true" in result.stdout'
+      failed_when: result.rc != 0
