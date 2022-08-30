@@ -113,11 +113,19 @@ def main():
             if not target.get('read_only'):
                 target['read_only'] = False
             else:
-                if target['read_only'] == 'True' or target['read_only'] == 'true':
+                if target['read_only'].lower() == 'true':
                     target['read_only'] = True
-                elif target['read_only'] == 'False' or target['read_only'] == 'false':
+                elif target['read_only'].lower() == 'false':
                     target['read_only'] = False
-            # create target connector object based on target type
+            # reset_dc as bool
+            if not target.get('reset_dc'):
+                target['reset_dc'] = False
+            else:
+                if target['reset_dc'].lower() == 'true':
+                    target['reset_dc'] = True
+                elif target['reset_dc'].lower() == 'false':
+                    target['reset_dc'] = False
+             # create target connector object based on target type
             if target['device_type'] == 'imc' or target['device_type'] == 'ucs' or target['device_type'] == 'ucsm' or target['device_type'] == 'ucspe':
                 dc_obj = device_connector.UcsDeviceConnector(target)
             elif target['device_type'] == 'hx':
@@ -133,6 +141,15 @@ def main():
                 return_code = 1
                 print(json.dumps(result))
                 continue
+
+            ro_json = {}
+            if target['reset_dc']:
+                dc_obj.reset_dc(ro_json)
+                if ro_json.get('ApiError'):
+                    result['msg'] += ro_json['ApiError']
+                    return_code = 1
+                    print(json.dumps(result))
+                    continue
 
             ro_json = dc_obj.configure_connector()
             if not ro_json['AdminState']:
