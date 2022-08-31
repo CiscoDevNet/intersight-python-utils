@@ -54,12 +54,15 @@ class DeviceConnector():
         for _ in range(4):
             ro_json = requests_op(operation='PUT', uri=self.connections_uri, header=self.auth_header, ro_json=ro_json, body={'CloudDns': 'svc.intersight.com', 'ForceResetIdentity': True, 'ResetIdentity': True})
             if ro_json.get('ApiError'):
-                break
+                continue
             # confirm setting has been applied
             if not ro_json.get('CloudDns'):
                 ro_json = requests_op(operation='GET', uri=self.connections_uri, header=self.auth_header, ro_json=ro_json, body={})
             if ro_json['CloudDns'] == 'svc.intersight.com':
                 break
+        else:
+            if not ro_json.get('ApiError'):
+                ro_json['ApiError'] = 'failed to reset DC CloudDns'
         return ro_json
 
     def get_status(self):
