@@ -113,10 +113,18 @@ def main():
             if not target.get('read_only'):
                 target['read_only'] = False
             else:
-                if target['read_only'] == 'True' or target['read_only'] == 'true':
+                if target['read_only'].lower() == 'true':
                     target['read_only'] = True
-                elif target['read_only'] == 'False' or target['read_only'] == 'false':
+                elif target['read_only'].lower() == 'false':
                     target['read_only'] = False
+            # reset_dc as bool
+            if not target.get('reset_dc'):
+                target['reset_dc'] = False
+            else:
+                if target['reset_dc'].lower() == 'true':
+                    target['reset_dc'] = True
+                elif target['reset_dc'].lower() == 'false':
+                    target['reset_dc'] = False
             # create target connector object based on target type
             if target['device_type'] == 'imc' or target['device_type'] == 'ucs' or target['device_type'] == 'ucsm' or target['device_type'] == 'ucspe':
                 dc_obj = device_connector.UcsDeviceConnector(target)
@@ -134,6 +142,7 @@ def main():
                 print(json.dumps(result))
                 continue
 
+            # Check that DC is enabled
             ro_json = dc_obj.configure_connector()
             if not ro_json['AdminState']:
                 return_code = 1
@@ -179,6 +188,16 @@ def main():
                 continue
 
             if ro_json['AccountOwnershipState'] != 'Claimed':
+                # force a DC reset if requested to ensure DC points to SaaS
+                ro_json = {}
+                if target['reset_dc']:
+                    ro_json = dc_obj.reset_dc(ro_json)
+                    if ro_json.get('ApiError'):
+                        result['msg'] += ro_json['ApiError']
+                        return_code = 1
+                        print(json.dumps(result))
+                        continue
+                    result['msg'] += "  DC Reset: %s" % ro_json['CloudDns']
                 # attempt to claim
                 (claim_resp, device_id, claim_code) = dc_obj.get_claim_info(ro_json)
                 if claim_resp.get('ApiError'):
@@ -186,10 +205,8 @@ def main():
                     return_code = 1
                     print(json.dumps(result))
                     continue
-
                 result['msg'] += "  Id: %s" % device_id
                 result['msg'] += "  Token: %s" % claim_code
-
                 # Create Intersight API instance and post ID/claim code
                 if not target.get('resource_groups'):
                     # claim to default resource group
@@ -203,6 +220,7 @@ def main():
             dc_obj.logout()
 
     except Exception as err:
+        return_code = 1
         print("Exception:", str(err))
         print('-' * 60)
         traceback.print_exc(file=sys.stdout)

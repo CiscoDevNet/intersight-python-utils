@@ -47,6 +47,23 @@ class DeviceConnector():
         else:
             self.connector_uri = "https://%s/connector" % self.device['hostname']
         self.systems_uri = "%s/Systems" % self.connector_uri
+        self.connections_uri = "%s/DeviceConnections" % self.connector_uri
+
+    def reset_dc(self, ro_json):
+        """Reset the Device Connector if requested"""
+        for _ in range(4):
+            ro_json = requests_op(operation='PUT', uri=self.connections_uri, header=self.auth_header, ro_json=ro_json, body={'CloudDns': 'svc.intersight.com', 'ForceResetIdentity': True, 'ResetIdentity': True})
+            if ro_json.get('ApiError'):
+                continue
+            # confirm setting has been applied
+            if not ro_json.get('CloudDns'):
+                ro_json = requests_op(operation='GET', uri=self.connections_uri, header=self.auth_header, ro_json=ro_json, body={})
+            if ro_json['CloudDns'] == 'svc.intersight.com':
+                break
+        else:
+            if not ro_json.get('ApiError'):
+                ro_json['ApiError'] = 'failed to reset DC CloudDns'
+        return ro_json
 
     def get_status(self):
         """Check current connection status."""
@@ -125,17 +142,21 @@ class DeviceConnector():
         claim_code = ''
         # get device id and claim code
         id_uri = "%s/DeviceIdentifiers" % self.connector_uri
-        ro_json = requests_op(operation='GET', uri=id_uri, header=self.auth_header, ro_json=ro_json, body={})
-        if not ro_json.get('ApiError'):
+        claim_uri = "%s/SecurityTokens" % self.connector_uri
+        for _ in range(4):
+            # get device id, try again on API errors
+            ro_json = requests_op(operation='GET', uri=id_uri, header=self.auth_header, ro_json=ro_json, body={})
+            if ro_json.get('ApiError'):
+                continue
             device_id = ro_json['Id']
-
-            claim_uri = "%s/SecurityTokens" % self.connector_uri
+            # get claim code, try again on API errors
             ro_json = requests_op(operation='GET', uri=claim_uri, header=self.auth_header, ro_json=ro_json, body={})
-            if not ro_json.get('ApiError'):
-                claim_code = ro_json['Token']
-            else:
-                claim_resp['ApiError'] = ro_json['ApiError']
+            if ro_json.get('ApiError'):
+                continue
+            claim_code = ro_json['Token']
+            break
         else:
+            # finished without getting claim info
             claim_resp['ApiError'] = ro_json['ApiError']
         return(claim_resp, device_id, claim_code)
 
