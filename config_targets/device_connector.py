@@ -139,17 +139,21 @@ class DeviceConnector():
         claim_code = ''
         # get device id and claim code
         id_uri = "%s/DeviceIdentifiers" % self.connector_uri
-        ro_json = requests_op(operation='GET', uri=id_uri, header=self.auth_header, ro_json=ro_json, body={})
-        if not ro_json.get('ApiError'):
+        claim_uri = "%s/SecurityTokens" % self.connector_uri
+        for _ in range(4):
+            # get device id, try again on API errors
+            ro_json = requests_op(operation='GET', uri=id_uri, header=self.auth_header, ro_json=ro_json, body={})
+            if ro_json.get('ApiError'):
+                continue
             device_id = ro_json['Id']
-
-            claim_uri = "%s/SecurityTokens" % self.connector_uri
+            # get claim code, try again on API errors
             ro_json = requests_op(operation='GET', uri=claim_uri, header=self.auth_header, ro_json=ro_json, body={})
-            if not ro_json.get('ApiError'):
-                claim_code = ro_json['Token']
-            else:
-                claim_resp['ApiError'] = ro_json['ApiError']
+            if ro_json.get('ApiError'):
+                continue
+            claim_code = ro_json['Token']
+            break
         else:
+            # finished without getting claim info
             claim_resp['ApiError'] = ro_json['ApiError']
         return(claim_resp, device_id, claim_code)
 
