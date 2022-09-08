@@ -22,11 +22,15 @@ def requests_op(operation, uri, header, ro_json, body):
             if operation == 'GET':
                 if isinstance(resp.json(), list):
                     ro_json = resp.json()[0]
-                else:
-                    ro_json['ApiError'] = "%s %s %s" % (operation, uri, resp.status_code)
+                    break
+                # loop if a list wasn't returned
+                sleep(1)
+                ro_json['ApiError'] = "  %s %s %s %s" % (operation, uri, resp.status_code, resp.json())
+                continue
             break
-        ro_json['ApiError'] = "%s %s %s" % (operation, uri, resp.status_code)
+        ro_json['ApiError'] = "  %s %s %s" % (operation, uri, resp.status_code)
         if re.match(r'5..', str(resp.status_code)):
+            # loop again on 5XX returns since the DC can take time to init
             sleep(1)
             continue
         break
