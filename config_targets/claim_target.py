@@ -130,6 +130,8 @@ def main():
                 dc_obj = device_connector.UcsDeviceConnector(target)
             elif target['device_type'] == 'hx':
                 dc_obj = device_connector.HxDeviceConnector(target)
+            elif target['device_type'] == 'imm':
+                dc_obj = device_connector.ImmDeviceConnector(target)
             else:
                 result['msg'] += "  Unknown device_type %s" % target['device_type']
                 return_code = 1

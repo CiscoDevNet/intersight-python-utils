@@ -225,3 +225,31 @@ class UcsDeviceConnector(DeviceConnector):
             xml_body = "<aaaLogout inCookie=\"%s\" />" % self.xml_cookie
             requests.post(self.xml_uri, verify=False, data=xml_body)
             self.logged_in = False
+
+
+class ImmDeviceConnector(DeviceConnector):
+    """Intersight Managed Mode (IMM) Device Connector subclass.
+    IMM Login API session cookie is used to authenticate Device Connector API access.
+    """
+
+    def __init__(self, device):
+        super(ImmDeviceConnector, self).__init__(device)
+        # create API session
+        # --------------------------------
+        self.imm_login_uri = "https://%s/Login" % self.device['hostname']
+        login_body = {
+            'User': self.device['username'],
+            'Password': self.device['password']
+        }
+        resp = requests.post(self.imm_login_uri, verify=False, json=login_body)
+        if re.match(r'2..', str(resp.status_code)):
+            ro_json = resp.json()
+            cookie_str = "sessionId=%s" % ro_json['SessionId']
+            self.auth_header = {'Cookie': cookie_str}
+            self.logged_in = True
+
+    def logout(self):
+        """Logout of API session if currently logged in."""
+        if self.logged_in:
+            # logout TBD
+            self.logged_in = False
