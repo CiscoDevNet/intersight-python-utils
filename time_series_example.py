@@ -1,6 +1,7 @@
 import logging
 from pprint import pformat
 import traceback
+from datetime import datetime, timedelta
 
 import intersight.api.telemetry_api
 import intersight.model.telemetry_druid_data_source
@@ -8,10 +9,19 @@ import intersight.model.telemetry_druid_period_granularity
 import intersight.model.telemetry_druid_query_context
 import intersight.model.telemetry_druid_time_series_request
 import credentials
+from helpers import format_time
 
 FORMAT = '%(asctime)-15s [%(levelname)s] [%(filename)s:%(lineno)s] %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 logger = logging.getLogger('openapi')
+
+
+def get_time_interval(num_days=5):
+    current_time = datetime.now()
+    end_time = format_time(current_time)
+    start_time = format_time(current_time - timedelta(days=num_days))
+    interval_str = start_time + '/' + end_time
+    return interval_str
 
 
 def get_time_series(api_client):
@@ -19,31 +29,7 @@ def get_time_series(api_client):
 
     # Create an instance of the API telemetry service.
     api_instance = intersight.api.telemetry_api.TelemetryApi(api_client)
-    logger.info("Query 'ucs_ether_port_stat' time series")
-    req = intersight.model.telemetry_druid_time_series_request.TelemetryDruidTimeSeriesRequest(
-        query_type="timeseries",
-        data_source=intersight.model.telemetry_druid_data_source.TelemetryDruidDataSource(
-            type="table",
-            name="ucs_ether_port_stat",
-        ),
-        intervals=[
-            "2021-01-01T00:00:00.000Z/2021-01-15T00:00:00.000Z",
-        ],
-        granularity=intersight.model.telemetry_druid_period_granularity.TelemetryDruidPeriodGranularity(
-            type="period",
-            period="P1D",
-        ),
-        context=intersight.model.telemetry_druid_query_context.TelemetryDruidQueryContext(
-            timeout=30,
-            query_id="ucs_ether_port_stat-QueryIdentifier",
-        ),
-    )
-    api_response = api_instance.query_telemetry_time_series(
-        telemetry_druid_time_series_request=req,
-    )
-    logger.info(pformat(api_response))
 
-    ##########################
     logger.info("Query 'device_connector' time series")
     req = intersight.model.telemetry_druid_time_series_request.TelemetryDruidTimeSeriesRequest(
         query_type="timeseries",
@@ -52,7 +38,7 @@ def get_time_series(api_client):
             name="device_connector",
         ),
         intervals=[
-            "2021-01-01T00:00:00.000Z/2021-01-15T00:00:00.000Z",
+            get_time_interval(),
         ],
         granularity=intersight.model.telemetry_druid_period_granularity.TelemetryDruidPeriodGranularity(
             type="period",
@@ -61,6 +47,39 @@ def get_time_series(api_client):
         context=intersight.model.telemetry_druid_query_context.TelemetryDruidQueryContext(
             timeout=30,
             query_id="device_connector-QueryIdentifier",
+        ),
+    )
+    api_response = api_instance.query_telemetry_time_series(
+        telemetry_druid_time_series_request=req,
+    )
+    logger.info(pformat(api_response))
+
+    ##########################
+    logger.info("Query 'ucs_ether_port_stat' time series")
+    req = intersight.model.telemetry_druid_time_series_request.TelemetryDruidTimeSeriesRequest(
+        aggregations=[
+            intersight.model.telemetry_druid_aggregator.TelemetryDruidAggregator(
+                field_name="sumBytesTx",
+                type="longSum",
+                name="traffic",
+                field_names=["sumBytesTx"]
+            ),
+        ],
+        query_type="timeseries",
+        data_source=intersight.model.telemetry_druid_data_source.TelemetryDruidDataSource(
+            type="table",
+            name="ucs_ether_port_stat",
+        ),
+        intervals=[
+            get_time_interval(),
+        ],
+        granularity=intersight.model.telemetry_druid_period_granularity.TelemetryDruidPeriodGranularity(
+            type="period",
+            period="P1D",
+        ),
+        context=intersight.model.telemetry_druid_query_context.TelemetryDruidQueryContext(
+            timeout=30,
+            query_id="ucs_ether_port_stat-QueryIdentifier",
         ),
     )
     api_response = api_instance.query_telemetry_time_series(
@@ -85,7 +104,7 @@ def get_time_series(api_client):
             name="psu_stat",
         ),
         intervals=[
-            "2021-01-01T00:00:00.000Z/2021-01-15T00:00:00.000Z",
+            get_time_interval(),
         ],
         granularity=intersight.model.telemetry_druid_period_granularity.TelemetryDruidPeriodGranularity(
             type="period",
