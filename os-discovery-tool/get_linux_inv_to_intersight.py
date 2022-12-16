@@ -133,7 +133,7 @@ class HostManager:
                 if server_moid and HostManager.host_tools_validated(
                         host, os_inv_reader.os_type):
                     driver_inv_reader = DriverInvReader(
-                        host, os_inv_reader.os_type, intersight_connection.host_type)
+                        host, os_inv_reader.os_type, intersight_connection.host_type, os_inv_reader.os_inv_collection.copy())
                     driver_inv_reader.get_driver_inv()
                     os_inv_collection = os_inv_reader.os_inv_collection + \
                         driver_inv_reader.os_inv_collection
@@ -405,14 +405,32 @@ class OsInvReader(InvReader):
 class DriverInvReader(InvReader):
     """Collect device and driver data."""
 
-    def __init__(self, hostname, os_type, host_type):
+    def __init__(self, hostname, os_type, host_type, os_collection):
         InvReader.__init__(self)
         self.host = hostname
         self.os_type = os_type
         self.host_type = host_type
+        self.os_collection = os_collection
 
     def get_driver_inv(self):
         """Collect device and driver data."""
+
+        kernel_version = ""
+        major_release_version = ""
+        os_name = ""
+        try:
+            for entry in self.os_collection:
+                if entry["Key"]=="intersight.server.os.name" or entry["Key"]=="intersight.server.os.kernelVersionString":
+                    os_name += entry["Value"]
+                if entry["Key"]=="intersight.server.os.releaseVersionString":
+                    kernel_version = ".".join(c for c in entry["Value"].split(".", 3)[:3])
+                    major_release_version = kernel_version.split(".")[0]
+        except Exception as err:
+            print((Bcolors.WARNING +
+                   '[WARNING]: Issue while parsing kernel version' +
+                   Bcolors.ENDC))
+            print((Bcolors.BOLD + "[WARNING-DETAIL]: " + str(err) + Bcolors.ENDC))
+
         print(("[" + self.host.strip() + "]: Extracting driver Inventory... "))
         if self.os_type == OsType.SUSE:
             drivers = self.invoke_shell(
@@ -425,6 +443,11 @@ class DriverInvReader(InvReader):
                 "suse-netversions.sh")
             descriptions = self.invoke_shell(
                 ExecType.SCRIPT, QueryType.DRIVER, "suse-netdev.sh")
+
+            if major_release_version.isdigit() and int(major_release_version) >= 5:
+                for ind, val in enumerate(versions):
+                    if (not val.strip()) or (val.strip() in os_name):
+                        versions[ind] = kernel_version
 
             drivers += self.invoke_shell(ExecType.SCRIPT,
                                          QueryType.DRIVER, "suse-storagedriver.sh")
@@ -439,6 +462,12 @@ class DriverInvReader(InvReader):
                 ExecType.SCRIPT, QueryType.DRIVER, "netversions.sh")
             descriptions = self.invoke_shell(
                 ExecType.SCRIPT, QueryType.DRIVER, "netdev.sh")
+
+            if major_release_version.isdigit() and int(major_release_version) >= 5:
+                for ind, val in enumerate(versions):
+                    if (not val.strip()) or (val.strip() in os_name):
+                        versions[ind] = kernel_version
+
             fc_dev = self.invoke_shell(
                 ExecType.SCRIPT, QueryType.DRIVER, "fcdev.sh")
 
