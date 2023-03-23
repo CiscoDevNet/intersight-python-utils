@@ -270,12 +270,18 @@ class InvReader:
     def invoke_shell(self, exec_type, query_type, name):
         """Invoke remote shell command."""
         output = None
-        if exec_type == ExecType.SCRIPT:
+        if exec_type == ExecType.SCRIPT and self.host.strip() != "localhost":
             cmd = "ssh " + self.host.strip() + " \'bash -s\' < " + name
-        elif exec_type == ExecType.COMMAND:
+        elif exec_type == ExecType.SCRIPT and self.host.strip() == "localhost":
+            cmd = "bash -s < " + name
+        elif exec_type == ExecType.COMMAND and self.host.strip() != "localhost":
             cmd = "ssh " + self.host.strip() + " " + name
-        elif exec_type == ExecType.SUDO:
+        elif exec_type == ExecType.COMMAND and self.host.strip() == "localhost":
+            cmd = name
+        elif exec_type == ExecType.SUDO and self.host.strip() != "localhost":
             cmd = "ssh -t 2>/dev/null " + self.host.strip() + " \'bash -s\' " + name
+        elif exec_type == ExecType.SUDO and self.host.strip() == "localhost":
+            cmd = "bash -s " + name
         if query_type == QueryType.OS:
             output = str(subprocess.check_output(
                 ['bash', '-c', cmd]), 'utf-8').strip()
