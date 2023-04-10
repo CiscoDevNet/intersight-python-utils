@@ -8,6 +8,8 @@ gather_inventory_from_host.sh - Creates a yaml file called host-inv.yaml using m
 
 send_inventory_to_imc.sh - Reads the host-inv.yaml created by inventory.sh and writes it to the IMC via IPMI
 
+![Example Image](Readme-example.png)
+
 ## Table of Contents
 
 - [Installation](#installation)
