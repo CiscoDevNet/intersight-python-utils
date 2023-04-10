@@ -33,9 +33,11 @@ modinfo, lspci, lshw, ipmitool
 
 Confirm all pre-requisite packages are installed
 
-Confirm all shell scripts have execute permissions
+Confirm all shell scripts from repository have execute permissions
 
 With a privileged user account run gather_inventory_from_host.sh or setup a cron job to run at boot and preferably every 24 hours
+
+Check Host HCL status in Intersight to see populate OS & driver info
 
 ## Details
 
