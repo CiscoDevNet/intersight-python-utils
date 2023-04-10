@@ -190,4 +190,5 @@ write-networkinfo
 write-fcinfo
 write-storageinfo
 
-$(./send_inventory_to_imc.sh)
+#Send host-inv.yaml file to IMC
+./send_inventory_to_imc.sh
