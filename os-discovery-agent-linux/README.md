@@ -29,7 +29,9 @@ Privileged account on host that can issue ipmi commands and retrieve local inven
 
 modinfo, lspci, lshw, ipmitool
 
+
 Note: Python is not required for this example
+
 
 ## Usage
 
