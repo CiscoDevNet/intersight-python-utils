@@ -4,9 +4,9 @@
 
 **Community** supported alternative to Intersight OS Discovery Tool that can run on baremetal hosts and populate driver information in Intersight via IPMI
 
-inventory.sh - Creates a yaml file called host-inv.yaml using most of the pre-existing inventory scripts from the intersight-python-utils/os-discovery-tool
+gather_inventory_from_host.sh - Creates a yaml file called host-inv.yaml using most of the pre-existing inventory scripts from the intersight-python-utils/os-discovery-tool and calls send_inventory_to_imc.sh
 
-agent.sh - Reads the host-inv.yaml created by inventory.sh and writes it to the IMC via IPMI
+send_inventory_to_imc.sh - Reads the host-inv.yaml created by inventory.sh and writes it to the IMC via IPMI
 
 ## Table of Contents (Optional)
 
