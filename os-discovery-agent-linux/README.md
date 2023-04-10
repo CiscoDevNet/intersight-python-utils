@@ -17,8 +17,15 @@ send_inventory_to_imc.sh - Reads the host-inv.yaml created by inventory.sh and w
 - [Limitations](#limitations)
 
 ## Installation
+**System Requirements:**
+Redhat Enterprise Linux
 
-Host Package Requirements:
+Ubuntu
+
+Privileged account on host that can issue ipmi commands and retrieve local inventory
+
+
+**Host Package Requirements:**
 
 modinfo
 
@@ -30,8 +37,11 @@ ipmitool
 
 ## Usage
 
-Provide instructions and examples for use. Include screenshots as needed.
+Confirm all pre-requisites are installed
 
+Confirm all shell scripts have execute permissions
+
+As a privileged user run gather_inventory_from_host.sh or setup a cron job to run at boot and preferably every 12-24 hours
 
 ## Details
 
@@ -123,9 +133,21 @@ Close File Descriptor - 0x36 0x77 0x01 [hex-filedescriptor]
 ```
 
 ## License
-
-The last section of a high-quality README file is the license. This lets other developers know what they can and cannot do with your project. If you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/).
-
+```
+<#
+Copyright (c) 2021 Cisco and/or its affiliates.
+This software is licensed to you under the terms of the Cisco Sample
+Code License, Version 1.0 (the "License"). You may obtain a copy of the
+License at
+               https://developer.cisco.com/docs/licenses
+All use of the material herein must be in accordance with the terms of
+the License. All rights not expressly granted by the License are
+reserved. Unless required by applicable law or agreed to separately in
+writing, software distributed under the License is distributed on an "AS
+IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+or implied.
+#>
+```
 ## Limitations
 
 🛑 Currently limited to Ubuntu (Tested specifically on Ubuntu 22.04) and Redhat Enterprise Linux (Tested specifically on RHEL 7.9 and 8.6)
