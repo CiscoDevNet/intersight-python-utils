@@ -2,6 +2,10 @@
 
 inventoryfilename="host-inv.yaml"
 
+if [ $(stat -c %s $inventoryfilename) -ge 65535 ] ; then
+	echo Exiting! $file is over maximum size of 65535
+fi
+
 echo "[localhost]: Removing existing host-inv.yaml inventory file from IMC"
 cmd="ipmitool raw 0x36 0x77 0x03 0x68 0x6f 0x73 0x74 0x2d 0x69 0x6e 0x76 0x2e 0x79 0x61 0x6d 0x6c"
 $cmd
