@@ -132,4 +132,4 @@ The last section of a high-quality README file is the license. This lets other d
 
 🛑 Currently no GPU support, only inventory of ethernet/fc/storage drivers
 
-🛑 COMMUNITY Supported Example
+🛑 This is a COMMUNITY Supported Example (Eg. No TAC Support)
