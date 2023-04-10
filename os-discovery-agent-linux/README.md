@@ -18,30 +18,22 @@ send_inventory_to_imc.sh - Reads the host-inv.yaml created by inventory.sh and w
 
 ## Installation
 **System Requirements:**
-Redhat Enterprise Linux
-
-Ubuntu
+Redhat Enterprise Linux, Ubuntu
 
 Privileged account on host that can issue ipmi commands and retrieve local inventory
 
 
-**Host Package Requirements:**
+**Host Software Requirements:**
 
-modinfo
-
-lspci
-
-lshw
-
-ipmitool
+modinfo, lspci, lshw, ipmitool
 
 ## Usage
 
-Confirm all pre-requisites are installed
+Confirm all pre-requisite packages are installed
 
 Confirm all shell scripts have execute permissions
 
-As a privileged user run gather_inventory_from_host.sh or setup a cron job to run at boot and preferably every 12-24 hours
+With a privileged user account run gather_inventory_from_host.sh or setup a cron job to run at boot and preferably every 24 hours
 
 ## Details
 
