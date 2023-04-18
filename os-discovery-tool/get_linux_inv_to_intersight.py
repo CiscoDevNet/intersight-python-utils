@@ -64,7 +64,7 @@ class OsType:
     """This class broadly identifies OS categories."""
     SUSE = ["Suse", "Sles"]
     DEBIAN = ["Ubuntu"]
-    REDHAT = ["Red Hat", "Rhel", "Centos"]
+    REDHAT = ["Red Hat", "Rhel", "Centos", "Rocky"]
     ORACLE = ["Ol"]
 
 
@@ -369,6 +369,9 @@ class OsInvReader(InvReader):
             if os_vendor == "Centos":
                 os_name = self.invoke_shell(
                     ExecType.SCRIPT, QueryType.OS, "centos-os-name.sh")
+            elif os_vendor == "Rocky":
+                os_name = self.invoke_shell(
+                    ExecType.SCRIPT, QueryType.OS, "rocky-os-name.sh")
             else:
                 os_name = self.invoke_shell(
                     ExecType.SCRIPT, QueryType.OS, "redhat-os-name.sh")
@@ -395,6 +398,9 @@ class OsInvReader(InvReader):
             os_vendor = "SuSE"
         elif os_vendor == "Ol":
             os_vendor = "Oracle Linux"
+        elif os_vendor == "Rocky":
+            os_vendor = "Rocky Linux"
+            os_flavor = os_name
 
         self.add_item(QueryType.OS, "updateTimestamp", self.iso_8601_time)
         self.add_item(
@@ -420,7 +426,6 @@ class DriverInvReader(InvReader):
 
     def get_driver_inv(self):
         """Collect device and driver data."""
-
         kernel_version = ""
         major_release_version = ""
         os_name = ""
