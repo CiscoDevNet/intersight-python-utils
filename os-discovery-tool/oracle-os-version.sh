@@ -5,7 +5,7 @@ oracle_version=$(cat /etc/*-release | grep ^VERSION | head -n1 | awk -F"=" '{pri
 
 if [[ $kernel == *"uek"* ]];
   then
-  echo $oracle_version "(UEK "$version")"
+  echo "Oracle Linux (UEK v"$version")"
 else
   echo $oracle_version
 fi
