@@ -65,7 +65,7 @@ class OsType:
     SUSE = ["Suse", "Sles"]
     DEBIAN = ["Ubuntu"]
     REDHAT = ["Red Hat", "Rhel", "Centos", "Rocky"]
-    ORACLE = ["Ol"]
+    ORACLE = ["ol"]
 
 
 class ValidationResult(Enum):
@@ -348,7 +348,7 @@ class OsInvReader(InvReader):
                     ExecType.SCRIPT,
                     QueryType.OS,
                     "suse-os-version.sh"))
-        elif os_vendor in OsType.ORACLE:
+        elif os_vendor.lower() in OsType.ORACLE:
             self.os_type = OsType.ORACLE
             os_flavor = (
                 self.invoke_shell(
@@ -396,8 +396,8 @@ class OsInvReader(InvReader):
             os_vendor = "CentOS"
         elif os_vendor == "Sles":
             os_vendor = "SuSE"
-        elif os_vendor == "Ol":
-            os_vendor = "Oracle Linux"
+        elif os_vendor.lower() == "ol":
+            os_vendor = "Oracle"
         elif os_vendor == "Rocky":
             os_vendor = "Rocky Linux"
             os_flavor = os_name
