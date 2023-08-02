@@ -4,5 +4,5 @@ lshwcmd=`which lshw`
 lspcicmd=`which lspci`
 for pciaddress in $(${lshwcmd} -C Storage 2>/dev/null | grep "pci@" | awk -F":" '{print $3":"$4}');
 do
-    ${lspcicmd} -v -s ${pciaddress} | grep "Subsystem" | awk -F":" '{print $2}'| xargs;
+    ${lspcicmd} -v -s ${pciaddress} | grep "Subsystem" | awk -F":" '{print $2}';
 done
