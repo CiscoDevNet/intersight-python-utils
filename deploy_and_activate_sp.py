@@ -60,9 +60,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
 
     # Please provide a valid filter to query the server_profile. For Example "Name eq server_profile1".
-    filter1 = "Name eq 'DevNet-SJC07-R14-R15'"
-    # Updating server_profile using the filter.
-    logger.info("Updating the server_profile using filter:", filter1)
+    filter1 = "Name eq 'SJC07-R14'"
 
     server_profile1_mo = get_server_profile(api_client, filter1)
 
