@@ -131,3 +131,5 @@ dmypy.json
 # Mac finder attributes and vscode settings
 .DS_Store
 .vscode/
+
+engineering_examples
