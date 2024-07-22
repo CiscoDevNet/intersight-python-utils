@@ -2,7 +2,7 @@
 
 ## Description
 
-**Community** supported alternative to Intersight OS Discovery Tool that can run on baremetal hosts and populate driver information in Intersight via IPMI
+**Community** supported alternative to Intersight OS Discovery Tool that can run on baremetal hosts and populate driver information in Intersight via IPMI.  This tool does **NOT** require any additional connectiivty or remote access unlike the original OS Disovery tool and behaves similar to ESXi ucs-tools.
 
 _gather_inventory_from_host.sh_ - Creates a yaml file called host-inv.yaml using most of the pre-existing inventory scripts from the intersight-python-utils/os-discovery-tool and calls send_inventory_to_imc.sh
 
@@ -28,6 +28,10 @@ Privileged account on host that can issue ipmi commands and retrieve local inven
 **Host Software Requirements:**
 
 modinfo, lspci, lshw, ipmitool
+
+
+Note: Python is not required for this example
+
 
 ## Usage
 
