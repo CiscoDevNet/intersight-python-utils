@@ -1,5 +1,4 @@
 FROM ubuntu
-SHELL ["/bin/bash", "-c"]
 
 # Install necessary packages
 RUN apt-get update && \

@@ -481,14 +481,14 @@ class DriverInvReader(InvReader):
             descriptions += self.invoke_shell(ExecType.SCRIPT,
                                               QueryType.DRIVER, "suse-storagedev.sh")
         elif self.os_type == OsType.REDHAT and "coreos" in os_name.lower():
-            drivers = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rchosnetdriver.sh")
-            versions = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rchosnetversions.sh")
-            descriptions = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rchosnetdev.sh")
-            drivers += self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rchosstoragedriver.sh")
-            descriptions += self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rchosstoragedev.sh")
-            storagenames = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rchosstoragedevnames.sh")
+            drivers = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosnetdriver.sh")
+            versions = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosnetversions.sh")
+            descriptions = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosnetdev.sh")
+            drivers += self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosstoragedriver.sh")
+            descriptions += self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosstoragedev.sh")
+            storagenames = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosstoragedevnames.sh")
             storagenameasargs = self.get_storage_driver_args(storagenames)
-            versions += self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rchosstoragedevversion.sh " + storagenameasargs)
+            versions += self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosstoragedevversion.sh " + storagenameasargs)
         else:
             drivers = self.invoke_shell(
                 ExecType.SCRIPT, QueryType.DRIVER, "netdriver.sh")
