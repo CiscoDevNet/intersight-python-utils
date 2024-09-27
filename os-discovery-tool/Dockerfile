@@ -11,7 +11,7 @@ VOLUME /app
 
 # Copy the HCL Scripts to collect driver information
 COPY ./netdriver.sh /app/
-COPY ./rchosdockernetversions.sh /app/
+COPY ./rhcosdockernetversions.sh /app/
 COPY ./netdev.sh /app/
 COPY ./storagedriver.sh /app/
 COPY ./storagedev.sh /app/
