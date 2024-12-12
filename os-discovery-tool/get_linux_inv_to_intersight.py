@@ -62,7 +62,7 @@ class QueryType(Enum):
 
 class OsType:
     """This class broadly identifies OS categories."""
-    SUSE = ["Suse", "Sles"]
+    SUSE = ["Suse", "Sles", "Sled"]
     DEBIAN = ["Ubuntu"]
     REDHAT = ["Red Hat", "Rhel", "Centos", "Rocky"]
     ORACLE = ["ol"]
@@ -394,7 +394,7 @@ class OsInvReader(InvReader):
             os_vendor = "Red Hat"
         elif os_vendor == "Centos":
             os_vendor = "CentOS"
-        elif os_vendor == "Sles":
+        elif os_vendor in ["Sles", "Sled"]:
             os_vendor = "SuSE"
         elif os_vendor.lower() == "ol":
             os_vendor = "Oracle"
