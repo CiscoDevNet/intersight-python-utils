@@ -537,7 +537,7 @@ class DriverInvReader(InvReader):
                 "driver." +
                 str(driver_count) +
                 ".version",
-                versions[i].lstrip("0"))
+                versions[i])
             self.add_item(
                 QueryType.DRIVER,
                 "driver." +
