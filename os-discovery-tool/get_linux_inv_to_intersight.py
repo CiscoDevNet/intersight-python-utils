@@ -64,7 +64,7 @@ class OsType:
     """This class broadly identifies OS categories."""
     SUSE = ["Suse", "Sles", "Sled"]
     DEBIAN = ["Ubuntu"]
-    REDHAT = ["Red Hat", "Rhel", "Centos", "Rocky"]
+    REDHAT = ["Red Hat", "Rhel", "Centos", "Rocky", "Rhcos"]
     ORACLE = ["ol"]
 
 
@@ -372,6 +372,9 @@ class OsInvReader(InvReader):
             elif os_vendor == "Rocky":
                 os_name = self.invoke_shell(
                     ExecType.SCRIPT, QueryType.OS, "rocky-os-name.sh")
+            elif os_vendor == "Rhcos":
+                os_name = self.invoke_shell(
+                    ExecType.SCRIPT, QueryType.OS, "rhcos-os-name.sh")
             else:
                 os_name = self.invoke_shell(
                     ExecType.SCRIPT, QueryType.OS, "redhat-os-name.sh")
@@ -389,8 +392,9 @@ class OsInvReader(InvReader):
                 ExecType.SCRIPT,
                 QueryType.OS,
                 "centos-os-name-legacy.sh")
+        self.os_name = os_name
 
-        if os_vendor == "Rhel":
+        if os_vendor in ["Rhel", "Rhcos"]:
             os_vendor = "Red Hat"
         elif os_vendor == "Centos":
             os_vendor = "CentOS"
@@ -423,6 +427,15 @@ class DriverInvReader(InvReader):
         self.os_type = os_type
         self.host_type = host_type
         self.os_collection = os_collection
+
+    def get_storage_driver_args(self, storageNames):
+        names = []
+        output = ''
+        for name in storageNames:
+            if name and name not in names:
+                names.append(name)
+                output += '"{0} "'.format(name)
+        return output
 
     def get_driver_inv(self):
         """Collect device and driver data."""
@@ -467,6 +480,15 @@ class DriverInvReader(InvReader):
                                           QueryType.DRIVER, "suse-storageversions.sh")
             descriptions += self.invoke_shell(ExecType.SCRIPT,
                                               QueryType.DRIVER, "suse-storagedev.sh")
+        elif self.os_type == OsType.REDHAT and "coreos" in os_name.lower():
+            drivers = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosnetdriver.sh")
+            versions = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosnetversions.sh")
+            descriptions = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosnetdev.sh")
+            drivers += self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosstoragedriver.sh")
+            descriptions += self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosstoragedev.sh")
+            storagenames = self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosstoragedevnames.sh")
+            storagenameasargs = self.get_storage_driver_args(storagenames)
+            versions += self.invoke_shell(ExecType.SCRIPT, QueryType.DRIVER, "rhcosstoragedevversion.sh " + storagenameasargs)
         else:
             drivers = self.invoke_shell(
                 ExecType.SCRIPT, QueryType.DRIVER, "netdriver.sh")
