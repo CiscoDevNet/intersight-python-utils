@@ -656,7 +656,7 @@ class IntersightConnectionManager:
                 if 'UCS-S3260' in self.host_type or 'UCSC-C3K' in self.host_type:
                     kwargs = dict(filter=("Serial eq " + self.serial_number), inlinecount='allpages', top=100)
                     self.results = self.api_instance.get_compute_blade_list(**kwargs)
-                elif 'UCSC-C' in self.host_type:
+                elif 'UCSC-C' in self.host_type or 'UCSC-885A' in self.host_type:
                     kwargs = dict(filter=("Serial eq " + self.serial_number), inlinecount='allpages', top=100)
                     self.results = self.api_instance.get_compute_rack_unit_list(**kwargs)
 
