@@ -73,7 +73,7 @@ total 1136
   ---
   ### II. Pre-requisites/dependent components for Target Servers
   1. **Claim your servers:** Ensure that all your linux servers are claimed in Cisco Intersight. We will call these **Target Servers**. This toolset validates only the claimed servers by their serial numbers and their connectivity to Intersight.  
-  2. **Install necessary packages:** Make sure the **lsmod**, **lspci** (pci-utils) and **lshw** (**hwinfo** for SuSE) commands are installed and available on the **Target servers**. 
+  2. **Install necessary packages:** Make sure the **lsmod**, **lspci** (pci-utils) and **lshw** (**hwinfo** for SuSE) commands are installed and available on the **Target servers**. For AMD GPU, make sure **amd-smi** commands are installed and available.
   3. **Supported Linux flavors:**
         - Red Hat Enterprise Linux(RHEL)
         - SUSE Linux Enterprise Server(SLES)
