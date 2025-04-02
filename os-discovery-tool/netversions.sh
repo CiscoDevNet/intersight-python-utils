@@ -15,8 +15,8 @@ if [ -z "${versionstring}" ]
         echo ${versionstring}
     fi
 done
-# support for Emulex HBA Adapter
-${lspcicmd} -nn | grep -Ei 'hba|host bus adapter|fibre channel' | awk -F" " '{print $1}' | while read pciaddress;
+# support for QLogic and Emulex HBA Adapter
+${lspcicmd} -nn | grep -Ei 'hba|host bus adapter|fibre channel|Fibre Channel' | awk -F" " '{print $1}' | while read pciaddress;
 do
     hbaversionstring=`${lspcicmd} -v -s ${pciaddress} | grep "Kernel driver" | awk -F":" '{print $2}' | xargs ${modinfocmd} 2>/dev/null | grep ^version: | awk '{print $2}'`
     if [ -z "${hbaversionstring}" ]
