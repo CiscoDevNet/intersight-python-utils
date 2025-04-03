@@ -5,7 +5,7 @@ lspcicmd=`which lspci`
 gpuvendornvidia='nvidia'
 gpuvendoramd='amd'
 nvidiasmicmd=`which nvidia-smi 2>&1`
-amdsmicmd=`which amd-smi 2>&1`
+amdcmdpath="/opt/rocm/.info/version"
 invalid=" |'"
 
 for pciaddress in $(${lshwcmd} -C Display 2>/dev/null | grep "pci@" | awk -F":" '{print $3":"$4}');
@@ -18,7 +18,7 @@ do
         fi
     # AMD Vendor GPU
     elif [[ ${displaydevice,,} =~ ${gpuvendoramd} ]]; then
-        if ! ([[ $amdsmicmd =~ $invalid || -z "$amdsmicmd" ]]); then
+        if [ -e $amdcmdpath ]; then
             echo $displaydevice
         fi
     fi
