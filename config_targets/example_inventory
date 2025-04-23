@@ -1,5 +1,5 @@
 [sjc07]
-172.28.225.122 device_type=imc
+172.28.225.122 device_type=imc default_password=password
 172.28.225.20 device_type=ucs
 172.22.249.11 device_type=imm
 
