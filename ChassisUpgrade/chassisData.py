@@ -1,0 +1,2 @@
+chassisSerial= ""
+psuImageVersion= ""
