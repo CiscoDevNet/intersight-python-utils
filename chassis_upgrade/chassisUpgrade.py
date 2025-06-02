@@ -38,10 +38,10 @@ SUPPORTED_MODELS = \
         ]
 try:
     conf = intersight.Configuration(
-        host="https://staging.starshipcloud.com",
+        host="https://intersight.com",
         signing_info=intersight.signing.HttpSigningConfiguration(
-            key_id='5ef993747564612d33e2ee2f/68352f137564613301320a0d/683550c07564613301321c51',
-            private_key_path='/home/sourabh/pemfile/sourabh-staging.pem',
+            key_id='',
+            private_key_path='',
             signing_scheme = signing.SCHEME_HS2019,
             signing_algorithm = signing.ALGORITHM_ECDSA_MODE_FIPS_186_3,
             signed_headers=[signing.HEADER_REQUEST_TARGET,
