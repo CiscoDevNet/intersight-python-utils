@@ -121,7 +121,7 @@ try:
         print("Upgrade is Running")
         pass
         continue
-    print("Workflow Monitor is exited checking upgrade status\n")
+        
 except Exception as excepMess6:
     print("failed at workflow upgrade status monitor {0}".format(str(excepMess6)))
 
