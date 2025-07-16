@@ -659,6 +659,9 @@ class IntersightConnectionManager:
                 elif 'UCSC-C' in self.host_type or 'UCSC-885A' in self.host_type:
                     kwargs = dict(filter=("Serial eq " + self.serial_number), inlinecount='allpages', top=100)
                     self.results = self.api_instance.get_compute_rack_unit_list(**kwargs)
+            elif 'CAI-845A' in self.host_type:
+                kwargs = dict(filter=("Serial eq '" + self.serial_number + "'"), inlinecount='allpages', top=100)
+                self.results = self.api_instance.get_compute_rack_unit_list(**kwargs)
 
             if self.results.count >= 1:
                 print(("[" +
@@ -686,7 +689,7 @@ class IntersightConnectionManager:
         print(("[" + hostname.strip() + "]: Patching Server MO with OS Inventory... "))
         if 'UCSB' in self.host_type or 'UCSX' in self.host_type or 'UCS-S3260' in self.host_type or 'UCSC-C3K' in self.host_type:
             result = self.api_instance.patch_compute_blade(moid, tags)
-        elif 'UCSC' in self.host_type or 'HX' in self.host_type:
+        elif 'UCSC' in self.host_type or 'HX' in self.host_type or 'CAI-845A' in self.host_type:
             result = self.api_instance.patch_compute_rack_unit(moid, tags)
         else:
             result = None
