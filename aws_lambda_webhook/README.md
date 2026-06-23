@@ -3,7 +3,7 @@
 AWS Lambda handler in Python for Intersight webhooks.
 
 ## Intersight Webhook Setup
-Follow the instructions at https://intersight.com/help/saas/features/cisco_intersight/settings to configure Intersight webhooks.  You will need a publicly accessible webhook target URL, and the example code in this repository is using an AWS API Gateway as a webhook target.  When Intersight webhooks are received by the AWS API Gateway, an AWS Lambda handler is called to verify the webhook payload and write data to an AWS Timestream time series database.
+Follow the instructions at [https://intersight.com/help/saas/features/cisco_intersight/settings](https://intersight.com/help/saas/settings#configuring_webhooks) to configure Intersight webhooks.  You will need a publicly accessible webhook target URL, and the example code in this repository is using an AWS API Gateway as a webhook target.  When Intersight webhooks are received by the AWS API Gateway, an AWS Lambda handler is called to verify the webhook payload and write data to an AWS Timestream time series database.
 
 ## Code Overview
 The intersight_alarms.py module has the following functions to process Intersight webhooks:
@@ -19,4 +19,4 @@ The intersight_alarms.py module has the following functions to process Intersigh
       
 ## Additional Information
 - Video overview of configuring and testing webhooks: https://www.youtube.com/watch?v=lQ2AHAQ-uuQ&ab_channel=CiscoIntersight%2CHyperFlex%26UCS
-- Intersight help pages on webhooks: https://intersight.com/help/saas/features/cisco_intersight/settings#configuring_webhooks
+- Intersight help pages on webhooks: [https://intersight.com/help/saas/features/cisco_intersight/settings#configuring_webhooks](https://intersight.com/help/saas/settings#configuring_webhooks)
