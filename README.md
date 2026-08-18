@@ -1,6 +1,9 @@
 # intersight-python-utils
 
-Cisco Intersight Python SDK examples.  Examples use the SDK available at https://intersight.com/apidocs/downloads/
+Cisco Intersight Python SDK examples.  Examples use the SDK available at https://intersight.com/apidocs/downloads/ (change intersight.com to eu-central-1.intersight.com for the EMEA region or use your Intersight appliance FQDN if needed).  The Overview page of apidocs also has direct download links for specific appliance API spec versions.
+
+<img width="1301" height="662" alt="image" src="https://github.com/user-attachments/assets/2146ac20-4631-4c4f-84a7-9c4c4cef3bea" />
+
 
 ## Python SDK Install
 - The Intersight Python SDK is available on the Python Package Index at https://pypi.org/project/intersight/ and can be installed using pip:
